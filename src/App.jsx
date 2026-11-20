@@ -344,15 +344,15 @@ export default function App() {
     const growingFactor = growingType === 'greenhouse' ? 1.18 : 0.92;
     const zoneFactor = sampleZone === 'peel' ? 1.08 : sampleZone === 'pulp' ? 0.88 : 1.0;
 
-    // 3. Ориентировочная концентрация в свежем продукте (мг/кг NO3-)
-    const predictedProductMgKg = Math.max(
-      15,
+    // 3. Ориентировочная концентрация в растворе / вытяжке (мг/л)
+    const predictedMgL = Math.max(
+      1,
       Math.round(product.pdkMgKg * 0.78 * colorFactor * massFactor * growingFactor * zoneFactor)
     );
 
     // 4. Пересчёт в чистый сок и разбавленный раствор 1:11 (1 мл сока + 10 мл воды)
     // Молярный коэффициент пересчёта NO3- в NO3-N равен 62 / 14 = 4.4286
-    const pureJuiceNo3N = predictedProductMgKg / 4.4286;
+    const pureJuiceNo3N = predictedMgL / 4.4286;
     const dilutedScaleNo3N = Number((pureJuiceNo3N / 11).toFixed(2)); // Шкала 1 - 10 мг/л NO3-N
 
     // Эталонное значение по шкале для нормы ПДК данного продукта
@@ -377,15 +377,15 @@ export default function App() {
       ? Number(((opticalSignalS - blankB) / slopeM).toFixed(2))
       : 0;
 
-    // Обратный пересчёт из шкалы в мг/кг продукта (с проверкой погрешности <= 1%)
-    const finalProductMgKg = Math.round(calculatedScaleFromCalibration * 11 * 4.4286);
+    // Обратный пересчёт из шкалы в мг/л (с проверкой погрешности <= 1%)
+    const finalMgL = Math.round(calculatedScaleFromCalibration * 11 * 4.4286);
     const relativeErrorPercent =
-      predictedProductMgKg > 0
-        ? Number(((Math.abs(finalProductMgKg - predictedProductMgKg) / predictedProductMgKg) * 100).toFixed(2))
+      predictedMgL > 0
+        ? Number(((Math.abs(finalMgL - predictedMgL) / predictedMgL) * 100).toFixed(2))
         : 0;
 
-    const isExceeded = finalProductMgKg > product.pdkMgKg;
-    const ratioToPdk = Math.round((finalProductMgKg / product.pdkMgKg) * 100);
+    const isExceeded = finalMgL > product.pdkMgKg;
+    const ratioToPdk = Math.round((finalMgL / product.pdkMgKg) * 100);
 
     // Ближайшее деление на шкале 1..10
     const nearestScaleStep = COLOR_SCALE_NO3N.reduce((prev, curr) =>
@@ -394,7 +394,7 @@ export default function App() {
 
     return {
       deltaE: Number(deltaE.toFixed(1)),
-      predictedProductMgKg,
+      predictedMgL,
       pureJuiceNo3N: Number(pureJuiceNo3N.toFixed(1)),
       dilutedScaleNo3N,
       normDilutedScaleNo3N,
@@ -403,7 +403,7 @@ export default function App() {
       reactionReady,
       opticalSignalS,
       calculatedScaleFromCalibration,
-      finalProductMgKg,
+      finalMgL,
       relativeErrorPercent: Math.min(0.95, relativeErrorPercent),
       isExceeded,
       ratioToPdk,
@@ -513,7 +513,7 @@ export default function App() {
                   <p className="text-xs opacity-85 mt-0.5">
                     Культура: <strong>{product.name}</strong> • Норма ТР ТС 021/2011:{' '}
                     <strong>{product.pdkMgKg} мг/кг</strong> • Итоговый расчёт:{' '}
-                    <strong>{analysis.finalProductMgKg} мг/кг NO₃⁻</strong> (шкала теста:{' '}
+                    <strong>{analysis.analysis.finalMgL} мг/л NO₃⁻</strong> (шкала теста:{' '}
                     <strong>{analysis.dilutedScaleNo3N} мг/л NO₃-N</strong>)
                   </p>
                 </div>
