@@ -513,7 +513,7 @@ export default function App() {
                   <p className="text-xs opacity-85 mt-0.5">
                     Культура: <strong>{product.name}</strong> • Норма ТР ТС 021/2011:{' '}
                     <strong>{product.pdkMgKg} мг/кг</strong> • Итоговый расчёт:{' '}
-                    <strong>{analysis.analysis.finalMgL} мг/л NO₃⁻</strong> (шкала теста:{' '}
+                    <strong>{analysis.finalMgL} мг/л NO₃⁻</strong> (шкала теста:{' '}
                     <strong>{analysis.dilutedScaleNo3N} мг/л NO₃-N</strong>)
                   </p>
                 </div>
