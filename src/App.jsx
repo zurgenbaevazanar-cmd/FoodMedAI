@@ -305,7 +305,7 @@ export default function App() {
     // Сдвиг яркости относительно эталона (более тёмные / водянисто-насыщенные ткани дают положительный сдвиг)
     const normLum = 0.299 * product.normRgb.r + 0.587 * product.normRgb.g + 0.114 * product.normRgb.b;
     const scanLum = 0.299 * scannedRgb.r + 0.587 * scannedRgb.g + 0.114 * scannedRgb.b;
-    const colorFactor = 1 + ((normLum - scanLum) / 140) * 0.65 + (deltaE / 250) * 0.2;
+    const colorFactor = Math.max(0.25, 1 + ((normLum - scanLum) / 140) * 0.65 + (deltaE / 250) * 0.2);
 
     // 2. Поправочные коэффициенты по метаданным
     const massRatio = sampleMass / product.defaultMass;
