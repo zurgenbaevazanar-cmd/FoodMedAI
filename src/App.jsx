@@ -215,7 +215,7 @@ export default function App() {
     setCameraActive(false);
   };
 
-  // Загрузка изображения с устройства
+  // Загрузка изображения с устройства + автоопределение культуры по цвету
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -230,7 +230,38 @@ export default function App() {
       canvas.width = 300;
       canvas.height = 300;
       ctx.drawImage(img, 0, 0, 300, 300);
-      extractRoiColor(canvas, ctx);
+
+      // Считываем пиксели ROI
+      const data = ctx.getImageData(105, 105, 90, 90).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+      }
+      const avgRgb = {
+        r: Math.round(r / count),
+        g: Math.round(g / count),
+        b: Math.round(b / count)
+      };
+      setScannedRgb(avgRgb);
+
+      // Подбираем ближайший по цвету овощ из базы
+      let bestMatch = PRODUCTS_DB[0];
+      let minDiff = Infinity;
+      for (const item of PRODUCTS_DB) {
+        const diff = calcDeltaE(avgRgb, item.normRgb);
+        if (diff < minDiff) {
+          minDiff = diff;
+          bestMatch = item;
+        }
+      }
+      setSelectedProductId(bestMatch.id);
+      setHasJuice(true);
+      setHasWater(true);
+      setHasReagentA(true);
+      setHasReagentB(true);
     };
     img.src = url;
   };
