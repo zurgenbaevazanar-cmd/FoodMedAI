@@ -709,7 +709,7 @@ export default function App() {
                       <div>
                         <div className="font-semibold text-slate-800">Ваш скан</div>
                         <div className="text-[10px] text-slate-500">
-                          ~{analysis.predictedProductMgKg} мг/кг
+                          ~{analysis.predictedMgL} мг/кг
                         </div>
                       </div>
                     </div>
@@ -996,7 +996,7 @@ export default function App() {
                       </div>
                       <div className="text-right">
                         <div className="font-mono font-extrabold text-base text-slate-900">
-                          {analysis.finalProductMgKg} мг/кг
+                          {analysis.finalMgL} мг/кг
                         </div>
                         <div className="text-[10px] font-semibold">
                           Норма: ≤ {product.pdkMgKg} мг/кг
